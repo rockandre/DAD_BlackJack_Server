@@ -57,11 +57,26 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('join_game', function(data){
-		let game = games.joinGame(data.gameID, data.playerName, socket.id);
-		socket.join(game.gameID);
+		let alreadyInGame = 0;
+		if(games.contadorID!=0){
+			let gameCheck = games.gameByID(data.gameID);
+			gameCheck.playerList.forEach(player => {
+				if(player.name == data.playerName){
+					alreadyInGame = 1;
+				}
+			});
+		}
+		if(alreadyInGame==0){
+			let game = games.joinGame(data.gameID, data.playerName, socket.id);
+			socket.join(game.gameID);
+			io.to(game.gameID).emit('my_active_games_changed');
+		} else {
+			let game = games.gameByID(data.gameID);
+			io.to(game.gameID).emit('my_active_games_changed');
+		}
 		socket.emit('my_active_games_changed');
-		//io.to(game.gameID).emit('my_active_games_changed');
 		io.emit('lobby_changed');
+		
 	});
 
 	socket.on('remove_game',function(data){

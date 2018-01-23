@@ -41,18 +41,20 @@ class BlackJackGame {
         let winners = [];
         let winnerHandSum = 0;
         let playerHandSum = 0;
-        playerList.forEach(player => {
-            playerHandSum = player.sum();
-            if(playerHandSum <= 21 && playerHandSum > winnerHandSum){
-                winnerHandSum = playerHandSum;
-            }
-        });
-        playerList.forEach(player => {
-            playerHandSum = player.sum();
-            if(playerHandSum == winnerHandSum){
-                winners.push(player);
-            }
-        });
+        if(checkGameEnded()){
+            playerList.forEach(player => {
+                playerHandSum = player.sum();
+                if(playerHandSum <= 21 && playerHandSum > winnerHandSum){
+                    winnerHandSum = playerHandSum;
+                }
+            });
+            playerList.forEach(player => {
+                playerHandSum = player.sum();
+                if(playerHandSum == winnerHandSum){
+                    winners.push(player);
+                }
+            });
+        }
         return winners;
     }
 
@@ -79,7 +81,7 @@ class BlackJackGame {
             return false;
         }
         if(action == Hit){
-            player.hand.push(this.deck.splice((deck.length-1),1));
+            player.addCard(this.deck.splice((deck.length-1),1));
         }
         if(action == Stand){
             player.stand = 1;

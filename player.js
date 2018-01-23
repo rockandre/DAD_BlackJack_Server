@@ -5,8 +5,9 @@ const Card = require('./card.js');
 class BlackJackPlayer {
     constructor(Name) {
         this.name = Name;
-        this.hand = [];
+        let hand = [];
         this.stand = 0;
+        this.pubHand = [];
     }
 
     handSum(){
@@ -18,8 +19,14 @@ class BlackJackPlayer {
     }
 
     addCard(newCard){
-        this.hand.push(newCard);
+        hand.push(newCard);
+        if(hand.size()==0){
+            this.pubHand.push(newCard);
+        } else {
+            this.pubHand.push(new Card("semFace",0));
+        }
     }
+
 }
 
 module.exports = BlackJackPlayer;
