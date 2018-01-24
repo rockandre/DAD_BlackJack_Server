@@ -15,7 +15,8 @@ class GameList {
 
     createGame(playerName, socketID) {
     	this.contadorID = this.contadorID+1;
-		var game = new BlackJackGame(this.contadorID, player1Name);
+		var game = new BlackJackGame(this.contadorID, playerName);
+		game.playerSocketList = [];
 		game.playerSocketList.push(socketID);
     	this.games.set(game.gameID, game);
     	return game;
@@ -25,9 +26,10 @@ class GameList {
     	let game = this.gameByID(gameID);
     	if (game===null) {
     		return null;
-    	}
-    	game.join(playerName);
-    	game.playerSocketList.push(socketID);
+		}
+		game.join(playerName);
+		game.playerSocketList.push(socketID);
+
     	return game;
     }
 
@@ -50,7 +52,7 @@ class GameList {
     	let games = [];
     	for (var [key, value] of this.games) {
 			value.playerSocketList.forEach(element => {
-				if(element = socketID){
+				if(element == socketID){
 					games.push(value);
 				}
 			});			
