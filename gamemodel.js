@@ -19,7 +19,6 @@ class BlackJackGame {
         this.gameStarted = false;
         this.playerList = [new Player(player1Name)];
         this.deck = [...eArr,...pArr,...cArr,...oArr];
-        this.winner = 0;
     }
 
     join(playerName){
@@ -69,7 +68,7 @@ class BlackJackGame {
         if(playerIndex == -1){
             return false;
         }
-        player = this.playerList[playerIndex];
+        let player = this.playerList[playerIndex];
         if (!this.gameStarted) {
             return false;
         }

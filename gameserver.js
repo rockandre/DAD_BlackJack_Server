@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
 		if(game.play(numPlayer, data.action)){
 			io.to(game.gameID).emit('game_changed',game);
 		}
-		console.log('Play');
+		console.log('Play '+data.action);
 	});
 
 	socket.on('start_game',function(data){
