@@ -36,14 +36,14 @@ class GameList {
     	if (game===null) {
     		return null;
 		}
-		var i = games.playerSocketList.indexOf(socketID);
+		var i = game.playerSocketList.indexOf(socketID);
 		if(i != -1) {
-			games.playerSocketList.splice(i, 1);
+			game.playerSocketList.splice(i, 1);
 		}
-    	if (games.playerSocketList.legth()<1) {
+    	if (game.playerSocketList.legth()<1) {
     		this.games.delete(gameID);
     	}
-    	return game;
+    	return games;
     }
 
     getConnectedGamesOf(socketID) {
