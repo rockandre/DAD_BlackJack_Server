@@ -46,8 +46,8 @@ io.on('connection', function (socket) {
 		io.emit('lobby_changed');
     });
 
-    socket.on('get_my_activegames',function(){
-		var my_games = games.getConnectedGamesOf(socket.id);
+    socket.on('get_my_activegames',function(data){
+		var my_games = games.getConnectedGamesOf(data.nickname);
 		socket.emit('my_activegames', my_games);
 	});
 

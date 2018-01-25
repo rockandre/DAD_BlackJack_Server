@@ -48,15 +48,16 @@ class GameList {
     	return games;
     }
 
-    getConnectedGamesOf(socketID) {
+    getConnectedGamesOf(nickname) {
     	let games = [];
-    	for (var [key, value] of this.games) {
-			value.playerSocketList.forEach(element => {
-				if(element == socketID){
-					games.push(value);
+    	this.games.forEach(game => {
+			game.playerList.forEach(player => {
+				if(player.name == nickname){
+                    console.log("SERVIDOR");
+					games.push(game);
 				}
 			});			
-		}
+		});
 		return games;
     }
 
