@@ -31,7 +31,7 @@ class GameList {
 		game.playerSocketList.push(socketID);
 
     	return game;
-    }
+	}
 
     removeGame(gameID, socketID) {
     	let game = this.gameByID(gameID);

@@ -90,18 +90,23 @@ io.on('connection', function (socket) {
 		var numPlayer = game.playerSocketList.indexOf(socket.id);
 		if(game.play(numPlayer, data.action)){
 			io.to(game.gameID).emit('game_changed',game);
+			//console.log("server:");
+			//console.log(game.showPlayerHand(numPlayer));
+			socket.emit('my_hand_changed',{gameID: game.gameID, hand: game.showPlayerHand(numPlayer)});
 		}
-		console.log('Play '+data.action);
+		console.log('Play '+ data.action);
 	});
 
 	socket.on('start_game',function(data){
 		let game = games.gameByID(data.gameID);
 		var numPlayer = game.playerSocketList.indexOf(socket.id);
-		if(numPlayer == 0){
+		if(numPlayer == 0 && game.gameCanBeStarted){
 			game.gameStarted = true;
+			game.shuffleDeck(game.deck);
 			io.to(game.gameID).emit('my_active_games_changed',game);
+			console.log('Game Started');
 		}
-		console.log('Game Started');
+		
 	});
 
 });

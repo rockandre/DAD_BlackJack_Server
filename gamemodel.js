@@ -26,6 +26,11 @@ class BlackJackGame {
         this.gameCanBeStarted = true;
     }
 
+    showPlayerHand(playerNumber){
+        let hand = this.playerList[playerNumber].showHand();
+        return hand;
+    }
+
     checkGameEnded(){
         playerList.forEach(player => {
             if(player.stand == 0){
@@ -41,13 +46,13 @@ class BlackJackGame {
         let winnerHandSum = 0;
         let playerHandSum = 0;
         if(checkGameEnded()){
-            playerList.forEach(player => {
+            this.playerList.forEach(player => {
                 playerHandSum = player.sum();
                 if(playerHandSum <= 21 && playerHandSum > winnerHandSum){
                     winnerHandSum = playerHandSum;
                 }
             });
-            playerList.forEach(player => {
+            this.playerList.forEach(player => {
                 playerHandSum = player.sum();
                 if(playerHandSum == winnerHandSum){
                     winners.push(player);
@@ -75,12 +80,13 @@ class BlackJackGame {
         if (this.gameEnded) {
             return false;
         }
-        if (player.hand.length = 4) {
+        if (player.pubHand.length == 4) {
             player.stand = 1;
             return false;
         }
         if(action == Hit){
-            player.addCard(this.deck.splice((deck.length-1),1));
+            let lastCardArr = this.deck.splice((this.deck.length-1),1);
+            player.addCard(lastCardArr[0]);
         }
         if(action == Stand){
             player.stand = 1;
