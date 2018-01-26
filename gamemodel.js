@@ -19,6 +19,9 @@ class BlackJackGame {
         this.gameStarted = false;
         this.playerList = [new Player(player1Name)];
         this.deck = [...eArr,...pArr,...cArr,...oArr];
+        this.playersThatPlayed = [];
+        this.turn = 0;
+        this.winners = [];
     }
 
     join(playerName){
@@ -32,28 +35,33 @@ class BlackJackGame {
     }
 
     checkGameEnded(){
-        playerList.forEach(player => {
+        let notYet = 0;
+        this.playerList.forEach(player => {
             if(player.stand == 0){
-                return false;
+                notYet = 1;
             }
         });
-        this.gameEnded = true;
-        return true;
+        if(notYet==1){
+            return false;
+        } else {
+            this.gameEnded = true;
+            return true;
+        }
     }
 
     checkWinners(){
         let winners = [];
         let winnerHandSum = 0;
         let playerHandSum = 0;
-        if(checkGameEnded()){
+        if(this.checkGameEnded()){
             this.playerList.forEach(player => {
-                playerHandSum = player.sum();
+                playerHandSum = player.handSum();
                 if(playerHandSum <= 21 && playerHandSum > winnerHandSum){
                     winnerHandSum = playerHandSum;
                 }
             });
             this.playerList.forEach(player => {
-                playerHandSum = player.sum();
+                playerHandSum = player.handSum();
                 if(playerHandSum == winnerHandSum){
                     winners.push(player);
                 }
@@ -69,7 +77,7 @@ class BlackJackGame {
         }
     }
 
-    play(playerIndex, action){
+    play(playerIndex){
         if(playerIndex == -1){
             return false;
         }
@@ -84,14 +92,12 @@ class BlackJackGame {
             player.stand = 1;
             return false;
         }
-        if(action == Hit){
+        if(player.stand == 0){
             let lastCardArr = this.deck.splice((this.deck.length-1),1);
             player.addCard(lastCardArr[0]);
+            return true;
         }
-        if(action == Stand){
-            player.stand = 1;
-        }
-        return true;
+        return false;
     }
 }
 

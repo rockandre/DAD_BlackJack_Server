@@ -26,6 +26,12 @@ app.listen(8080, function(){
 	console.log('listening on *:8080');
 });
 
+function giveCardsToPlayers(){
+	game.play(index, 1);
+	io.to(game.gameID).emit('game_changed',game);
+	socket.emit('my_hand_changed',{gameID: game.gameID, hand: game.showPlayerHand(numPlayer)});
+}
+
 // ------------------------
 // Estrutura dados - server
 // ------------------------
@@ -88,13 +94,29 @@ io.on('connection', function (socket) {
 		let game = games.gameByID(data.gameID);
 		//tratar socket para gerir jogadas inválidas
 		var numPlayer = game.playerSocketList.indexOf(socket.id);
-		if(game.play(numPlayer, data.action)){
-			io.to(game.gameID).emit('game_changed',game);
-			//console.log("server:");
-			//console.log(game.showPlayerHand(numPlayer));
-			socket.emit('my_hand_changed',{gameID: game.gameID, hand: game.showPlayerHand(numPlayer)});
+		game.playersThatPlayed.push(numPlayer);
+		if(data.action == 0){
+			game.playerList[numPlayer].stand = 1;
 		}
-		console.log('Play '+ data.action);
+		game.checkGameEnded();
+		console.log("Game state "+game.gameEnded);
+		console.log("Players that played "+game.playersThatPlayed);
+		if(game.playersThatPlayed.length == game.playerList.length){
+			if(game.gameEnded==0){
+				game.playerList.forEach((player,index) => {
+					if(game.play(index)){
+						io.to(game.gameID).emit('game_changed',game);
+						io.to(game.playerSocketList[index]).emit('my_hand_changed',{gameID: game.gameID, hand: game.showPlayerHand(index)});
+					}
+				});
+				game.turn += 1;
+				game.playersThatPlayed = [];
+			} else {
+				game.winners = game.checkWinners();
+				io.to(game.gameID).emit('game_changed',game);
+			}
+		}
+		console.log('Player chose '+ data.action);
 	});
 
 	socket.on('start_game',function(data){
@@ -106,7 +128,15 @@ io.on('connection', function (socket) {
 			io.to(game.gameID).emit('my_active_games_changed',game);
 			console.log('Game Started');
 		}
-		
+		for(let i=0;i<2;i++){
+			game.playerList.forEach((player,index) => {
+				if(game.play(index)){
+					io.to(game.gameID).emit('game_changed',game);
+					io.to(game.playerSocketList[index]).emit('my_hand_changed',{gameID: game.gameID, hand: game.showPlayerHand(index)});
+				}
+			});
+			game.turn += 1;
+		}
 	});
 
 });

@@ -16,7 +16,7 @@ class BlackJackPlayer {
     }
     
     handSum(){
-        sum = 0;
+        let sum = 0;
         hands.get(this).hand.forEach(card => {
             sum+=card.value;
         });
