@@ -18,6 +18,7 @@ class GameList {
 		var game = new BlackJackGame(this.contadorID, playerName);
 		game.playerSocketList = [];
 		game.playerSocketList.push(socketID);
+        game.playersThatWillPlay++;
     	this.games.set(game.gameID, game);
     	return game;
     }
@@ -29,6 +30,7 @@ class GameList {
 		}
 		game.join(playerName);
 		game.playerSocketList.push(socketID);
+        game.playersThatWillPlay++;
 
     	return game;
 	}
@@ -42,7 +44,7 @@ class GameList {
 		if(i != -1) {
 			game.playerSocketList.splice(i, 1);
 		}
-    	if (game.playerSocketList.legth()<1) {
+    	if (game.playerSocketList.length()<1) {
     		this.games.delete(gameID);
     	}
     	return games;

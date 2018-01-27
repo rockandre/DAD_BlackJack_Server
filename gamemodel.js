@@ -20,6 +20,7 @@ class BlackJackGame {
         this.playerList = [new Player(player1Name)];
         this.deck = [...eArr,...pArr,...cArr,...oArr];
         this.playersThatPlayed = [];
+        this.playersThatWillPlay = 0;
         this.turn = 0;
         this.winners = [];
     }
@@ -93,8 +94,13 @@ class BlackJackGame {
             return false;
         }
         if(player.stand == 0){
+            console.log("RECEBEU UMA CARTA");
             let lastCardArr = this.deck.splice((this.deck.length-1),1);
             player.addCard(lastCardArr[0]);
+            if(player.handSum() >= 21) {
+                player.stand = 1;
+                this.playersThatWillPlay--;
+            }
             return true;
         }
         return false;

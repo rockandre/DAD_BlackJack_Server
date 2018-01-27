@@ -39,20 +39,20 @@ function giveCardsToPlayers(){
 let games = new GameList();
 
 io.on('connection', function (socket) {
-    console.log('client has connected');
+	console.log('client has connected');
 
-    socket.on('create_game', function (data){
-    	console.log('A new game is about to be created');
-    	let game = games.createGame(data.playerName, socket.id);
+	socket.on('create_game', function (data){
+		console.log('A new game is about to be created');
+		let game = games.createGame(data.playerName, socket.id);
     	// Use socket channels/rooms
-		socket.join(game.gameID);
+    	socket.join(game.gameID);
 		// Notification to the client that created the game
 		socket.emit('my_active_games_changed');
 		// Notification to all clients
 		io.emit('lobby_changed');
-    });
+	});
 
-    socket.on('get_my_activegames',function(data){
+	socket.on('get_my_activegames',function(data){
 		var my_games = games.getConnectedGamesOf(data.nickname);
 		socket.emit('my_activegames', my_games);
 	});
@@ -94,14 +94,19 @@ io.on('connection', function (socket) {
 		let game = games.gameByID(data.gameID);
 		//tratar socket para gerir jogadas inválidas
 		var numPlayer = game.playerSocketList.indexOf(socket.id);
-		game.playersThatPlayed.push(numPlayer);
+		
 		if(data.action == 0){
 			game.playerList[numPlayer].stand = 1;
+			game.playersThatWillPlay--;
+		} else {
+			if(!game.playersThatPlayed.includes(numPlayer)){
+				game.playersThatPlayed.push(numPlayer);
+			}
 		}
 		game.checkGameEnded();
 		console.log("Game state "+game.gameEnded);
-		console.log("Players that played "+game.playersThatPlayed);
-		if(game.playersThatPlayed.length == game.playerList.length){
+		console.log("Players that played "+game.playersThatWillPlay);
+		if(game.playersThatPlayed.length == game.playersThatWillPlay){
 			if(game.gameEnded==0){
 				game.playerList.forEach((player,index) => {
 					if(game.play(index)){
@@ -109,6 +114,10 @@ io.on('connection', function (socket) {
 						io.to(game.playerSocketList[index]).emit('my_hand_changed',{gameID: game.gameID, hand: game.showPlayerHand(index)});
 					}
 				});
+				if(game.checkGameEnded()) {
+					game.winners = game.checkWinners();
+					io.to(game.gameID).emit('game_changed',game);
+				}
 				game.turn += 1;
 				game.playersThatPlayed = [];
 			} else {
