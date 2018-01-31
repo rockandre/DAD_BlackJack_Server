@@ -13,9 +13,10 @@ class BlackJackDeck {
 	constructor(callback) {
 		this.id = this.randomDeckFromDB();
 		let aux = this;
-		this.attributeCards(function(cards) {
+		this.attributeCards(function(cards, name) {
 
 			console.log("SECONDDDDD");
+			aux.name = name;
 			aux.cards = cards;
 			callback(aux);
 		}); 
@@ -50,7 +51,7 @@ class BlackJackDeck {
 			});
 			console.log(cards);
 			console.log("FIRSTTTT");
-			callback(cards);
+			callback(cards, response.data.name);
 		})
 		.catch(error => {
 			//console.log(error.response.data);
@@ -60,16 +61,18 @@ class BlackJackDeck {
 
 	randomDeckFromDB()
 	{
+		let min = 0;
 		let max = 0;
-		axios.get(apiBaseURL+'decks/quantity', headers)
+		axios.get(apiBaseURL+'decks/minMax', headers)
 		.then(response => {
-			max = response.data.decks;
+			min = response.data.min;
+			max = response.data.max;
 		})
 		.catch(error => {
 			console.log(error.response.data);
 		});
 
-		let number = Math.floor(Math.random()*(max-1+1)+1);
+		let number = Math.floor(Math.random()*(max-min+1)+min);
 
 		return number;
 	}
