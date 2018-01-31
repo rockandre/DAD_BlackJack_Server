@@ -91,6 +91,17 @@ class GameList {
             game.playersThatWillPlay--;
         }
         if (game.playerSocketList.length<1) {
+            var gameBD = {
+                'status': 'canceled'
+            }
+
+            axios.put(apiBaseURL+"game/update/"+game.gameID, gameBD, headers)
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log(error.response.data);
+            });
             this.games.delete(gameID);
             this.games.contadorID--;
         }
