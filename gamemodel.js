@@ -60,6 +60,9 @@ class BlackJackGame {
         if(notYet==1){
             return false;
         } else {
+            this.playerList.forEach(player => {
+                player.pubHand = player.showHand();
+            });
             this.gameEnded = true;
 
             return true;
