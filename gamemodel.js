@@ -1,7 +1,15 @@
 /*jshint esversion: 6 */
 
+var axios = require('axios');
+const apiBaseURL = "http://blackjack.dad/api/";
+const headers = {headers: {
+    "Accept": "application/json",
+}};
+
 const Player = require('./player.js');
 const Card = require('./card.js');
+const Deck = require('./deck.js');
+
 
 const eArr = [new Card("e1",11),new Card("e2",2), new Card("e3",3),new Card("e4",4),new Card("e5",5),new Card("e6",6),new Card("e7",7),new Card("e8",8),new Card("e9",9),new Card("e10",10),new Card("e11",10),new Card("e12",10),new Card("e13",10)];
 const pArr = [new Card("p1",11),new Card("p2",2), new Card("p3",3),new Card("p4",4),new Card("p5",5),new Card("p6",6),new Card("p7",7),new Card("p8",8),new Card("p9",9),new Card("p10",10),new Card("p11",10),new Card("p12",10),new Card("p13",10)];
@@ -12,17 +20,23 @@ const Hit = 1;
 const Stand = 0;
 
 class BlackJackGame {
-    constructor(ID, player1Name) {
-        this.gameID = ID;
+    constructor(player1Name, callback) {
+        this.gameID = 0;
         this.gameEnded = false;
         this.gameCanBeStarted = false;
         this.gameStarted = false;
         this.playerList = [new Player(player1Name)];
-        this.deck = [...eArr,...pArr,...cArr,...oArr];
+
         this.playersThatPlayed = [];
         this.playersThatWillPlay = 0;
         this.turn = 0;
         this.winners = [];
+        let aux = this;
+        new Deck(function(deckAux) {
+            aux.deck = deckAux;
+            console.log("THIRDDDD");
+            callback(aux);
+        });
     }
 
     join(playerName){
@@ -46,12 +60,14 @@ class BlackJackGame {
             return false;
         } else {
             this.gameEnded = true;
+
             return true;
         }
     }
 
     checkWinners(){
         let winners = [];
+        let winnersBD = [];
         let winnerHandSum = 0;
         let playerHandSum = 0;
         if(this.checkGameEnded()){
@@ -64,10 +80,25 @@ class BlackJackGame {
             this.playerList.forEach(player => {
                 playerHandSum = player.handSum();
                 if(playerHandSum == winnerHandSum){
+                    winnersBD.push(player.name);
                     winners.push(player);
                 }
             });
         }
+
+
+        var gameBD = {
+            'status': 'terminated',
+            'winners': winnersBD
+        }
+
+        axios.put(apiBaseURL+"game/update/"+this.gameID, gameBD, headers)
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.log(error.response.data);
+        });
         return winners;
     }
 
@@ -95,7 +126,9 @@ class BlackJackGame {
         }
         if(player.stand == 0){
             console.log("RECEBEU UMA CARTA");
-            let lastCardArr = this.deck.splice((this.deck.length-1),1);
+            console.log(this.deck.cards);
+            let lastCardArr = this.deck.cards.splice((this.deck.cards.length-1),1);
+            console.log(lastCardArr);
             player.addCard(lastCardArr[0]);
             if(player.handSum() >= 21) {
                 player.stand = 1;

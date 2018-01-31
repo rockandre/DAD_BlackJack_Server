@@ -22,6 +22,12 @@ var io = require('socket.io')(app);
 var BlackJackGame = require('./gamemodel.js');
 var GameList = require('./gamelist.js');
 
+var axios = require('axios');
+const apiBaseURL = "http://blackjack.dad/api/";
+const headers = {headers: {
+    "Accept": "application/json",
+}};
+
 app.listen(8080, function(){
 	console.log('listening on *:8080');
 });
@@ -43,13 +49,16 @@ io.on('connection', function (socket) {
 
 	socket.on('create_game', function (data){
 		console.log('A new game is about to be created');
-		let game = games.createGame(data.playerName, socket.id);
-    	// Use socket channels/rooms
-    	socket.join(game.gameID);
-		// Notification to the client that created the game
-		socket.emit('my_active_games_changed');
-		// Notification to all clients
-		io.emit('lobby_changed');
+		games.createGame(data.playerName, socket.id, function(game) {
+
+    		// Use socket channels/rooms
+    		socket.join(game.gameID);
+			// Notification to the client that created the game
+			socket.emit('my_active_games_changed');
+			// Notification to all clients
+			io.emit('lobby_changed');
+		});
+
 	});
 
 	socket.on('get_my_activegames',function(data){
@@ -64,7 +73,7 @@ io.on('connection', function (socket) {
 
 	socket.on('join_game', function(data){
 		let alreadyInGame = 0;
-		if(games.contadorID!=0){
+		if(games.length!=0){
 			let gameCheck = games.gameByID(data.gameID);
 			gameCheck.playerList.forEach(player => {
 				if(player.name == data.playerName){
@@ -85,8 +94,14 @@ io.on('connection', function (socket) {
 		
 	});
 
+	socket.on('leave_game',function(data){
+		let game = games.leaveGame(data.gameID,socket.id);
+		socket.emit('my_active_games_changed');
+		io.emit('lobby_changed');
+		io.to(data.gameID).emit('game_changed', game);
+	});
+
 	socket.on('remove_game',function(data){
-		let game = games.removeGame(data.gameID,socket.id);
 		socket.emit('my_active_games_changed');
 	});
 
@@ -131,9 +146,11 @@ io.on('connection', function (socket) {
 	socket.on('start_game',function(data){
 		let game = games.gameByID(data.gameID);
 		var numPlayer = game.playerSocketList.indexOf(socket.id);
+		
+
 		if(numPlayer == 0 && game.gameCanBeStarted){
 			game.gameStarted = true;
-			game.shuffleDeck(game.deck);
+			game.shuffleDeck(game.deck.cards);
 			io.to(game.gameID).emit('my_active_games_changed',game);
 			console.log('Game Started');
 		}
@@ -146,6 +163,18 @@ io.on('connection', function (socket) {
 			});
 			game.turn += 1;
 		}
+
+		var gameBD = {
+            'status': 'active',
+        }
+
+		axios.put(apiBaseURL+"game/update/"+game.gameID, gameBD, headers)
+		.then(response => {
+			console.log(response.data);
+		})
+		.catch(error => {
+			console.log(error.response.data);
+		});
 	});
 
 });
