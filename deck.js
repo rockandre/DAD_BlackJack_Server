@@ -64,14 +64,11 @@ class BlackJackDeck {
 
 	randomDeckFromDB(callback)
 	{
-		let min = 0;
-		let max = 0;
 		axios.get(apiBaseURL+'decks/minMax', headers)
 		.then(response => {
-			min = response.data.min;
-			max = response.data.max;
+			ids = response.data.ids;
 
-			let number = Math.floor(Math.random()*(max-min+1)+min);
+			let number = ids[Math.floor(Math.random() * ids.length)];
 
 			callback(number);
 		})
