@@ -68,7 +68,12 @@ class BlackJackDeck {
 		.then(response => {
 			ids = response.data.ids;
 
-			let number = ids[Math.floor(Math.random() * ids.length)];
+			let number = 0;
+			if(ids.isArray()) {
+				number = ids[Math.floor(Math.random() * ids.length)];
+			} else {
+				number = ids;
+			}
 
 			callback(number);
 		})
