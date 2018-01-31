@@ -4,7 +4,7 @@
 var BlackJackGame = require('./gamemodel.js');
 var axios = require('axios');
 
-const apiBaseURL = "http://188.166.152.94/api/";
+const apiBaseURL = "http://blackjack.dad/api/";
 const headers = {headers: {
     "Accept": "application/json",
 }};
@@ -18,7 +18,7 @@ class GameList {
         let game;
 
         this.games.forEach(gameF => {
-            if( gameF.gameID = gameID ) {
+            if( gameF.gameID == gameID ) {
                 game = gameF;
             }
         });
@@ -34,7 +34,6 @@ class GameList {
             game.playerSocketList = [];
             game.playerSocketList.push(socketID);
             game.playersThatWillPlay++;
-            aux.games.set(game.gameID, game);
 
             var gameBD = {
                 'total_players': game.playerList.length,
@@ -45,6 +44,7 @@ class GameList {
             axios.post(apiBaseURL+"game/create", gameBD, headers)
             .then(response => {
                 game.gameID = response.data.game.id;
+                aux.games.set(game.gameID, game);
                 callback(game);
             })
             .catch(error => {

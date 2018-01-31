@@ -5,7 +5,7 @@ const Card = require('./card.js');
 
 var axios = require('axios');
 
-const apiBaseURL = "http://188.166.152.94/api/";
+const apiBaseURL = "http://blackjack.dad/api/";
 const headers = {headers: {
 	"Accept": "application/json",
 }};
@@ -66,14 +66,16 @@ class BlackJackDeck {
 	{
 		axios.get(apiBaseURL+'decks/minMax', headers)
 		.then(response => {
-			ids = response.data.ids;
+			let deckIds = response.data.ids;
 
 			let number = 0;
-			if(ids.isArray()) {
-				number = ids[Math.floor(Math.random() * ids.length)];
+
+			if(Array.isArray(deckIds)) {
+				number = deckIds[Math.floor(Math.random() * deckIds.length)];
 			} else {
-				number = ids;
+				number = deckIds;
 			}
+
 
 			callback(number);
 		})
