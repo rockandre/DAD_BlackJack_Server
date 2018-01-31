@@ -1,7 +1,8 @@
 /*jshint esversion: 6 */
+'use strict';
 
 var axios = require('axios');
-const apiBaseURL = "http://blackjack.dad/api/";
+const apiBaseURL = "http://188.166.152.94/api/";
 const headers = {headers: {
     "Accept": "application/json",
 }};
@@ -103,9 +104,12 @@ class BlackJackGame {
     }
 
     shuffleDeck(deck) {
-        for (let i = deck.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
+        var j, x, i;
+        for (i = deck.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            x = deck[i];
+            deck[i] = deck[j];
+            deck[j] = x;
         }
     }
 
@@ -125,10 +129,7 @@ class BlackJackGame {
             return false;
         }
         if(player.stand == 0){
-            console.log("RECEBEU UMA CARTA");
-            console.log(this.deck.cards);
             let lastCardArr = this.deck.cards.splice((this.deck.cards.length-1),1);
-            console.log(lastCardArr);
             player.addCard(lastCardArr[0]);
             if(player.handSum() >= 21) {
                 player.stand = 1;

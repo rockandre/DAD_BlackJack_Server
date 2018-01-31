@@ -1,4 +1,5 @@
 /*jshint esversion: 6 */
+'use strict';
 
 const Card = require('./card.js');
 let hands = new WeakMap();

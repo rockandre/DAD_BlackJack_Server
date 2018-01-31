@@ -1,37 +1,41 @@
 /*jshint esversion: 6 */
+'use strict';
 
 const Card = require('./card.js');
 
 var axios = require('axios');
 
-const apiBaseURL = "http://blackjack.dad/api/";
+const apiBaseURL = "http://188.166.152.94/api/";
 const headers = {headers: {
 	"Accept": "application/json",
 }};
 
 class BlackJackDeck {
 	constructor(callback) {
-		this.id = this.randomDeckFromDB();
 		let aux = this;
-		this.attributeCards(function(cards, name) {
+		this.randomDeckFromDB(function(id) {
+			aux.id = id;
 
-			console.log("SECONDDDDD");
-			aux.name = name;
-			aux.cards = cards;
-			callback(aux);
-		}); 
+			aux.attributeCards(function(cards, name) {
+
+				console.log("SECONDDDDD");
+				aux.name = name;
+				aux.cards = cards; 
+
+				callback(aux);
+			}); 
+
+		});
+		
 	}
 
 	attributeCards(callback) {
 		
 		let cardsAux = [];
-		console.log(this.id)
 		axios.get(apiBaseURL+'decks/'+this.id, headers)
 		.then(response => {
-			//console.log(response.data);
 			cardsAux = response.data.cards;
 			let cards = [];
-			console.log(cardsAux);
 			cardsAux.forEach(card => {
 				let value = 0;
 				switch(card.value) {
@@ -48,19 +52,17 @@ class BlackJackDeck {
 					break;
 				}
 				let name = card.path.substring((card.path.indexOf('/')+1), card.path.indexOf('.'));
-				console.log(value+" / "+name);
 				cards.push(new Card(name, value));
 			});
-			console.log("FIRSTTTT");
 			callback(cards, response.data.name);
 		})
 		.catch(error => {
-			//console.log(error.response.data);
+			console.log(error.response.data);
 		});
 
 	}
 
-	randomDeckFromDB()
+	randomDeckFromDB(callback)
 	{
 		let min = 0;
 		let max = 0;
@@ -68,14 +70,14 @@ class BlackJackDeck {
 		.then(response => {
 			min = response.data.min;
 			max = response.data.max;
+
+			let number = Math.floor(Math.random()*(max-min+1)+min);
+
+			callback(number);
 		})
 		.catch(error => {
 			console.log(error.response.data);
 		});
-
-		let number = Math.floor(Math.random()*(max-min+1)+min);
-
-		return number;
 	}
 }
 module.exports = BlackJackDeck;
