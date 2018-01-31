@@ -23,7 +23,9 @@ class BlackJackDeck {
 	}
 
 	attributeCards(callback) {
+		
 		let cardsAux = [];
+		console.log(this.id)
 		axios.get(apiBaseURL+'decks/'+this.id, headers)
 		.then(response => {
 			//console.log(response.data);
@@ -49,7 +51,6 @@ class BlackJackDeck {
 				console.log(value+" / "+name);
 				cards.push(new Card(name, value));
 			});
-			console.log(cards);
 			console.log("FIRSTTTT");
 			callback(cards, response.data.name);
 		})
@@ -77,5 +78,4 @@ class BlackJackDeck {
 		return number;
 	}
 }
-
 module.exports = BlackJackDeck;
