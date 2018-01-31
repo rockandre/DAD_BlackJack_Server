@@ -1,8 +1,6 @@
 /*jshint esversion: 6 */
 'use strict';
 
-'use strict';
-
 var app = require('http').createServer();
 
 // CORS TRIALS
