@@ -6,7 +6,7 @@ const Card = require('./card.js');
 var axios = require('axios');
 
 //const apiBaseURL = "http://blackjackdad.ga/api/";
-const apiBaseURL = "http://blackjack.dad/api/";
+const apiBaseURL = "http://blackjackdad.ga/api/";
 const headers = {headers: {
 	"Accept": "application/json",
 }};
