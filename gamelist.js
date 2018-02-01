@@ -4,7 +4,8 @@
 var BlackJackGame = require('./gamemodel.js');
 var axios = require('axios');
 
-const apiBaseURL = "http://blackjackdad.ga/api/";
+//const apiBaseURL = "http://blackjackdad.ga/api/";
+const apiBaseURL = "http://blackjack.dad/api/";
 const headers = {headers: {
     "Accept": "application/json",
 }};

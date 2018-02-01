@@ -2,7 +2,8 @@
 'use strict';
 
 var axios = require('axios');
-const apiBaseURL = "http://blackjackdad.ga/api/";
+//const apiBaseURL = "http://blackjackdad.ga/api/";
+const apiBaseURL = "http://blackjack.dad/api/";
 const headers = {headers: {
     "Accept": "application/json",
 }};
@@ -32,6 +33,7 @@ class BlackJackGame {
         this.playersThatWillPlay = 0;
         this.turn = 0;
         this.winners = [];
+        this.points = 50;
         let aux = this;
         new Deck(function(deckAux) {
             aux.deck = deckAux;
@@ -74,6 +76,7 @@ class BlackJackGame {
         let winnersBD = [];
         let winnerHandSum = 0;
         let playerHandSum = 0;
+        let numWinners = 0;
         if(this.checkGameEnded()){
             this.playerList.forEach(player => {
                 playerHandSum = player.handSum();
@@ -81,13 +84,20 @@ class BlackJackGame {
                     winnerHandSum = playerHandSum;
                 }
             });
+            if (winnerHandSum == 21){
+                this.points += 50;
+            }
             this.playerList.forEach(player => {
                 playerHandSum = player.handSum();
                 if(playerHandSum == winnerHandSum){
+                    numWinners++;
                     winnersBD.push(player.name);
                     winners.push(player);
                 }
             });
+            if (numWinners == 1){
+                this.points += 50;
+            }
         }
 
 
