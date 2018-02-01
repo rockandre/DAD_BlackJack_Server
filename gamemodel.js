@@ -74,6 +74,7 @@ class BlackJackGame {
     checkWinners(){
         let winners = [];
         let winnersBD = [];
+        let players = [];
         let winnerHandSum = 0;
         let playerHandSum = 0;
         let numWinners = 0;
@@ -94,25 +95,27 @@ class BlackJackGame {
                     winnersBD.push(player.name);
                     winners.push(player);
                 }
+                players.push(player.name);
             });
             if (numWinners == 1){
                 this.points += 50;
             }
+            var gameBD = {
+                'status': 'terminated',
+                'winners': winnersBD,
+                'players': players,
+                'points': this.points
+            }
+
+            axios.put(apiBaseURL+"game/update/"+this.gameID, gameBD, headers)
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log(error.response.data);
+            });
         }
 
-
-        var gameBD = {
-            'status': 'terminated',
-            'winners': winnersBD
-        }
-
-        axios.put(apiBaseURL+"game/update/"+this.gameID, gameBD, headers)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.log(error.response.data);
-        });
         return winners;
     }
 
